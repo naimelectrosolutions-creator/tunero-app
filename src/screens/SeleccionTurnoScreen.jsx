@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { getDiasDisponibles, getDisponibilidad } from '../api/client';
 import DiaChip from '../components/DiaChip';
 import HoraChip from '../components/HoraChip';
@@ -12,6 +12,9 @@ function SeleccionTurnoScreen({ slug, config, servicio, onVolver, onContinuar })
   const [horaSeleccionada, setHoraSeleccionada] = useState(null);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState(null);
+  
+  // Esta referencia evita que el día de hoy se seleccione en bucle infinito
+  const autoSeleccionado = useRef(false);
 
   useEffect(() => {
     if (slug) cargarDias();
@@ -32,7 +35,11 @@ function SeleccionTurnoScreen({ slug, config, servicio, onVolver, onContinuar })
       setDias(data);
 
       const hoyDisponible = data.find(d => d.fecha === hoy && d.disponible);
-      if (hoyDisponible) setDiaSeleccionado(hoyDisponible);
+      // Solo selecciona el día de hoy la primera vez que carga la pantalla
+      if (hoyDisponible && !autoSeleccionado.current) {
+        autoSeleccionado.current = true;
+        setDiaSeleccionado(hoyDisponible);
+      }
     } catch (e) {
       setError('Error al cargar días: ' + (e.message || 'desconocido'));
     } finally {
