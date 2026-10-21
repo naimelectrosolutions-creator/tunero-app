@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'https://backend-production-ab43.up.railway.app';
+// 👇 ACÁ ESTÁ EL CAMBIO: Quitamos la URL de Railway y ponemos '/api'
+const API_URL = '/api';
 
 const api = axios.create({
   baseURL: API_URL,
